@@ -1,5 +1,6 @@
 import { ICONS } from '../../game/icons.js'
 import { CARD, cardArtUri, titleFontSize } from '../../game/cardLayout.js'
+import cursedLogo from '../../assets/images/cursed-logo.png'
 
 /*
  * The card the player receives. The artwork is an image (exported from Figma);
@@ -28,6 +29,15 @@ export default function CurseCard({ curse, colorId, width = CARD.width, classNam
           alt=""
           draggable="false"
           className="absolute inset-0 size-full select-none"
+        />
+
+        {/* brand mark */}
+        <img
+          src={cursedLogo}
+          alt=""
+          draggable="false"
+          className="absolute select-none"
+          style={{ top: CARD.logo.top, left: CARD.logo.left, width: CARD.logo.width, height: 'auto' }}
         />
 
         <h3

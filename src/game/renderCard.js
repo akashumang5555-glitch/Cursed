@@ -1,5 +1,6 @@
 import { ICONS } from './icons.js'
 import { CARD, cardArtUri, titleFontSize } from './cardLayout.js'
+import cursedLogo from '../assets/images/cursed-logo.png'
 
 // Draws the result card to a PNG (used by Download and Share).
 // Mirrors CurseCard.jsx using the same numbers from cardLayout.js.
@@ -33,7 +34,11 @@ export async function renderCardBlob(curse, colorId, scale = 2) {
     document.fonts.load('37px "Lilita One"'),
     document.fonts.load('16px "Instrument Sans"'),
   ])
-  const [art, icon] = await Promise.all([loadImage(cardArtUri(colorId)), loadImage(ICONS[curse.icon])])
+  const [art, icon, logo] = await Promise.all([
+    loadImage(cardArtUri(colorId)),
+    loadImage(ICONS[curse.icon]),
+    loadImage(cursedLogo),
+  ])
 
   const canvas = document.createElement('canvas')
   canvas.width = Math.round(CARD.width * scale)
@@ -45,6 +50,11 @@ export async function renderCardBlob(curse, colorId, scale = 2) {
   ctx.roundRect(0, 0, CARD.width, CARD.height, CARD.radius)
   ctx.clip()
   ctx.drawImage(art, 0, 0, CARD.width, CARD.height)
+
+  // brand mark, top-left, matching CurseCard.jsx
+  const logoW = CARD.logo.width
+  const logoH = logoW * (logo.height / logo.width)
+  ctx.drawImage(logo, CARD.logo.left, CARD.logo.top, logoW, logoH)
 
   ctx.fillStyle = '#fff'
   ctx.textAlign = 'center'

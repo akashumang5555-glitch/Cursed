@@ -14,6 +14,9 @@ export const CARD = {
   // The icon sits just below the description, so it follows the text when the
   // description wraps to 3 lines. With 2 lines it lands exactly on Figma's top (529.2).
   icon: { left: 196.63, size: 94.275, gap: 21.96 },
+  // Small "Cursed!" brand mark, top-left corner. Width only - height follows
+  // the logo picture's own aspect ratio (it's a wide wordmark, not a square).
+  logo: { width: 84, top: 24, left: 22 },
 }
 
 // Long names get a smaller font so they stay inside the mouth of the monster.
