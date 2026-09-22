@@ -1,0 +1,21 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="294.2" height="159.2" viewBox="0 0 294.2 159.2" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Ellipse 21858" filter="url(#filter0_gf_0_12)" style="mix-blend-mode:overlay">
+<ellipse cx="147.1" cy="79.6" rx="98" ry="30.5" fill="url(#paint0_radial_0_12)" fill-opacity="0.66"/>
+</g>
+<defs>
+<filter id="filter0_gf_0_12" x="0" y="0" width="294.2" height="159.2" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.034364260733127594 0.034364260733127594" numOctaves="3" seed="7494" />
+<feDisplacementMap in="shape" scale="59.799999237060547" xChannelSelector="R" yChannelSelector="G" result="displacedImage" width="100%" height="100%" />
+<feMerge result="effect1_texture_0_12">
+<feMergeNode in="displacedImage"/>
+</feMerge>
+<feGaussianBlur stdDeviation="24.55" result="effect2_foregroundBlur_0_12"/>
+</filter>
+<radialGradient id="paint0_radial_0_12" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(147.1 79.6) scale(98 30.5)">
+<stop stop-color="#D9D9D9"/>
+<stop offset="1" stop-color="#7FCCD3"/>
+</radialGradient>
+</defs>
+</svg>
