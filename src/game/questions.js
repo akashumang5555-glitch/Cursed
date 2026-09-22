@@ -26,7 +26,7 @@ export const QUESTIONS = [
   {
     id: 'follow',
     number: '02',
-    title: 'WHAT DO YOU FOLLOW?',
+    title: 'What do you follow?',
     type: 'pills',
     options: [
       { id: 'logic', label: 'LOGIC' },
@@ -39,7 +39,7 @@ export const QUESTIONS = [
     id: 'color',
     number: '03',
     // The Figma frame repeats "WHAT DO YOU FOLLOW?" here; this is a placeholder title.
-    title: 'WHICH COLOR CALLS YOU?',
+    title: 'Which color calls you?',
     type: 'colors',
     options: [
       { id: 'red', label: 'Red', color: '#de2525' },
@@ -64,7 +64,7 @@ export const QUESTIONS = [
   {
     id: 'weakness',
     number: '05',
-    title: 'WHAT CAN BREAK YOU?',
+    title: 'What can break you?',
     type: 'pills',
     options: [
       { id: 'overthinking', label: 'OVERTHINKING' },

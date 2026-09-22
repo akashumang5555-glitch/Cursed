@@ -465,6 +465,47 @@ html.diving .portal-pool { animation-play-state: paused; }
 /* Hand-drawn edge of the option pills (the text stays crisp). */
 .pill-outline { filter: url(#pill-wobble); }
 
+/* Picking an option: the others settle back into the shadow... */
+@keyframes option-fade-out {
+  from { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  to { opacity: 0; transform: translateY(8px) scale(0.92); filter: blur(2px); }
+}
+
+/* ...while the chosen one is drawn into the cauldron: a brief magical charge
+   (brighten + lift), then a slow, lofted arc down into the liquid, dissolving
+   as it goes. --tx/--ty is the straight-line offset from the option to the
+   cauldron; --mx/--my is a point above the midway line, so the path bows
+   upward like it's being carried rather than thrown. All in real px (measured
+   live in QuestionScreen.jsx), so no --s scaling is needed here. */
+@keyframes option-cast {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 0 rgba(210, 255, 225, 0));
+  }
+  14% {
+    transform: translate(0, -2px) scale(1.07) rotate(-2deg);
+    filter: drop-shadow(0 0 22px rgba(230, 255, 235, 0.85));
+  }
+  55% {
+    transform: translate(calc(var(--mx) * 1px), calc(var(--my) * 1px)) scale(0.82) rotate(3deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 26px rgba(180, 255, 205, 0.65));
+  }
+  100% {
+    transform: translate(calc(var(--tx) * 1px), calc(var(--ty) * 1px)) scale(0.16) rotate(-5deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 10px rgba(150, 255, 180, 0.3)) blur(1.5px);
+  }
+}
+
+.option-fade-out { animation: option-fade-out 0.32s ease-out forwards; pointer-events: none; }
+.option-cast { animation: option-cast 1.05s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; will-change: transform, opacity, filter; }
+
+@media (prefers-reduced-motion: reduce) {
+  .option-fade-out, .option-cast { animation: none; }
+}
+
 /* ---- Cauldron ------------------------------------------------------------ */
 
 @keyframes cauldron-glow {
@@ -526,14 +567,26 @@ html.diving .portal-pool { animation-play-state: paused; }
   animation: cauldron-spark 1.6s ease-out infinite;
 }
 
+/* A soft bloom the instant a cast option lands - the payoff for the arc. */
+@keyframes cauldron-puff {
+  0% { opacity: 0; transform: scale(0.25); }
+  20% { opacity: 0.8; }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+.cauldron-puff {
+  background: radial-gradient(closest-side, rgba(235, 255, 240, 0.65), rgba(140, 255, 165, 0.28) 50%, transparent 75%);
+  animation: cauldron-puff 1.1s ease-out forwards;
+}
+
 /* while the curse is being found, the cauldron works harder */
 .cauldron-intense .cauldron-glow { animation-duration: 1.5s; }
 .cauldron-intense .cauldron-ambient { animation-duration: 2.5s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .cauldron-glow, .cauldron-ambient, .cauldron-bubble, .cauldron-wisp, .cauldron-spark,
+  .cauldron-glow, .cauldron-ambient, .cauldron-bubble, .cauldron-wisp, .cauldron-spark, .cauldron-puff,
   .loading-dots span, .card-burst, .late-in { animation: none; }
-  .cauldron-bubble, .cauldron-wisp, .cauldron-spark { opacity: 0; }
+  .cauldron-bubble, .cauldron-wisp, .cauldron-spark, .cauldron-puff { opacity: 0; }
   .screen-in, .card-in { animation: none; }
   .dive-overlay, .game-arrive { animation: none; }
   .dive-overlay { display: none; }

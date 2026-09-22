@@ -35,6 +35,19 @@ function measure() {
 const GameScaleContext = createContext(null)
 export const useGameScale = () => useContext(GameScaleContext)
 
+// Where a thrown quiz option should aim for: the centre of the cauldron's
+// liquid, in viewport px. Mirrors the cauldron image's placement below and
+// CauldronEffects' own POOL centre (265, 153 design px inside the cauldron art).
+export function cauldronCenter(scale) {
+  const { W, s } = scale
+  return { x: W / 2 + s, y: frameY(scale, 695) + 153 * s }
+}
+
+// Lets a screen (e.g. the quiz) ask the persistent cauldron for a puff of
+// smoke, without the cauldron needing to know who's asking.
+const CauldronPuffContext = createContext(() => {})
+export const useCauldronPuff = () => useContext(CauldronPuffContext)
+
 function useViewportScale() {
   const [scale, setScale] = useState(measure)
   useEffect(() => {
@@ -53,100 +66,104 @@ export const frameY = ({ H, s }, y) => H / 2 + (y - FRAME_H / 2) * s
 export default function GameStage({ children, showCauldron = true, dim = 0, intense = false, onClose, hideClose = false }) {
   const scale = useViewportScale()
   const { W, H, s, u } = scale
+  const [puff, setPuff] = useState(0)
+  const triggerPuff = () => setPuff((n) => n + 1)
 
   return (
     <GameScaleContext.Provider value={scale}>
-      <div
-        className="game-arrive fixed inset-0 overflow-hidden bg-[#0b0507]"
-        style={{ '--u': u, '--s': s }}
-      >
-        {/* room (Figma "image 38": 1777 x 1085, centred on the frame) */}
-        <img
-          src={room}
-          alt=""
-          draggable="false"
-          className="pointer-events-none absolute max-w-none select-none"
-          style={{
-            width: 1777 * s,
-            height: 1085 * s,
-            left: W / 2 - (1777 * s) / 2,
-            top: H / 2 - (1085 * s) / 2,
-          }}
-        />
-
-        {/* candles, bottle and skull eyes flicker */}
-        <RoomLights />
-
-        {/* cauldron + its effects; fades away on the result screen */}
+      <CauldronPuffContext.Provider value={triggerPuff}>
         <div
-          className="pointer-events-none absolute inset-0 transition-opacity duration-700"
-          style={{ opacity: showCauldron ? 1 : 0 }}
+          className="game-arrive fixed inset-0 overflow-hidden bg-[#0b0507]"
+          style={{ '--u': u, '--s': s }}
         >
-          {/* cauldron (Figma "image 39") */}
+          {/* room (Figma "image 38": 1777 x 1085, centred on the frame) */}
           <img
-            src={cauldron}
+            src={room}
             alt=""
             draggable="false"
-            className="absolute max-w-none select-none"
+            className="pointer-events-none absolute max-w-none select-none"
             style={{
-              width: 530 * s,
-              height: 579 * s,
-              left: W / 2 + 1 * s - (530 * s) / 2,
-              top: frameY(scale, 695),
+              width: 1777 * s,
+              height: 1085 * s,
+              left: W / 2 - (1777 * s) / 2,
+              top: H / 2 - (1085 * s) / 2,
             }}
           />
-          {/* glow on the potion */}
+
+          {/* candles, bottle and skull eyes flicker */}
+          <RoomLights />
+
+          {/* cauldron + its effects; fades away on the result screen */}
           <div
-            className="absolute mix-blend-screen"
-            style={{
-              width: 358 * s,
-              height: 130 * s,
-              left: W / 2 + (685 - FRAME_W / 2) * s,
-              top: frameY(scale, 776),
-            }}
+            className="pointer-events-none absolute inset-0 transition-opacity duration-700"
+            style={{ opacity: showCauldron ? 1 : 0 }}
           >
-            <div className="absolute" style={{ inset: '-37.77% -13.72%' }}>
-              <img src={cauldronGlow} alt="" className="block size-full max-w-none" />
+            {/* cauldron (Figma "image 39") */}
+            <img
+              src={cauldron}
+              alt=""
+              draggable="false"
+              className="absolute max-w-none select-none"
+              style={{
+                width: 530 * s,
+                height: 579 * s,
+                left: W / 2 + 1 * s - (530 * s) / 2,
+                top: frameY(scale, 695),
+              }}
+            />
+            {/* glow on the potion */}
+            <div
+              className="absolute mix-blend-screen"
+              style={{
+                width: 358 * s,
+                height: 130 * s,
+                left: W / 2 + (685 - FRAME_W / 2) * s,
+                top: frameY(scale, 776),
+              }}
+            >
+              <div className="absolute" style={{ inset: '-37.77% -13.72%' }}>
+                <img src={cauldronGlow} alt="" className="block size-full max-w-none" />
+              </div>
+            </div>
+            {/* bubbling, glow, wisps (positioned on the cauldron picture) */}
+            <div
+              className="absolute"
+              style={{
+                width: 530 * s,
+                height: 579 * s,
+                left: W / 2 + 1 * s - (530 * s) / 2,
+                top: frameY(scale, 695),
+              }}
+            >
+              <CauldronEffects intense={intense} puff={puff} />
             </div>
           </div>
-          {/* bubbling, glow, wisps (positioned on the cauldron picture) */}
+
           <div
-            className="absolute"
-            style={{
-              width: 530 * s,
-              height: 579 * s,
-              left: W / 2 + 1 * s - (530 * s) / 2,
-              top: frameY(scale, 695),
-            }}
-          >
-            <CauldronEffects intense={intense} />
-          </div>
-        </div>
-
-        <div
-          className="pointer-events-none absolute inset-0 bg-black transition-opacity duration-700"
-          style={{ opacity: dim }}
-        />
-
-        {/* rough hand-drawn edge used by the option pills */}
-        <svg width="0" height="0" className="absolute" aria-hidden="true">
-          <filter id="pill-wobble" x="-5%" y="-20%" width="110%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </svg>
-
-        {children}
-
-        {onClose && !hideClose && (
-          <CloseButton
-            onClick={onClose}
-            label="Close game and go back home"
-            className="late-in absolute z-30"
-            style={{ right: `max(16px, ${d(40)})`, top: `max(16px, ${d(40)})` }}
+            className="pointer-events-none absolute inset-0 bg-black transition-opacity duration-700"
+            style={{ opacity: dim }}
           />
-        )}
-      </div>
+
+          {/* rough hand-drawn edge used by the option pills */}
+          <svg width="0" height="0" className="absolute" aria-hidden="true">
+            <filter id="pill-wobble" x="-5%" y="-20%" width="110%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </svg>
+
+          {children}
+
+          {onClose && !hideClose && (
+            <CloseButton
+              onClick={onClose}
+              label="Close game and go back home"
+              className="late-in absolute z-30"
+              style={{ right: `max(16px, ${d(40)})`, top: `max(16px, ${d(40)})` }}
+            />
+          )}
+        </div>
+      </CauldronPuffContext.Provider>
     </GameScaleContext.Provider>
   )
 }

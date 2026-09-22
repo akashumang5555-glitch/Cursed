@@ -1,22 +1,52 @@
 import { useEffect, useRef, useState } from 'react'
-import { ScreenContent, d } from './GameStage.jsx'
+import { ScreenContent, d, useGameScale, useCauldronPuff, cauldronCenter } from './GameStage.jsx'
 import OptionPill from './OptionPill.jsx'
 import ColorOption from './ColorOption.jsx'
 import ImageOption from './ImageOption.jsx'
 import backArrow from '../../assets/game/back-arrow.svg'
 
+// How long the chosen option takes to arc into the cauldron - the next
+// question appears the moment this ends, so it must match the CSS
+// `option-cast` animation duration (index.css) exactly.
+const CAST_MS = 1050
+
 // One question: big faint number, title, and the row of options for its type.
 export default function QuestionScreen({ question, canGoBack, onAnswer, onBack }) {
   const [picked, setPicked] = useState(null)
+  const [cast, setCast] = useState(null) // {tx, ty, mx, my}: the arc from the picked option to the cauldron, in real px
   const timer = useRef(0)
+  const optionRefs = useRef({})
+  const scale = useGameScale()
+  const triggerPuff = useCauldronPuff()
 
   useEffect(() => () => clearTimeout(timer.current), [])
 
   function choose(id) {
     if (picked) return
     setPicked(id)
-    // let the selected state show for a moment, then move on
-    timer.current = window.setTimeout(() => onAnswer(id), 380)
+
+    const quick = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const el = optionRefs.current[id]
+    if (el && !quick) {
+      const r = el.getBoundingClientRect()
+      const target = cauldronCenter(scale)
+      const tx = target.x - (r.left + r.width / 2)
+      const ty = target.y - (r.top + r.height / 2)
+      // lift the midpoint above the straight line to the cauldron, so the
+      // option is carried in on a soft arc instead of flying straight at it
+      const lift = Math.min(170, Math.max(70, Math.hypot(tx, ty) * 0.3))
+      setCast({ tx, ty, mx: tx * 0.5, my: ty * 0.5 - lift })
+    }
+
+    // the cast animation IS the transition - the next question shows up the
+    // instant it lands, not after some extra wait on top of it
+    timer.current = window.setTimeout(
+      () => {
+        triggerPuff()
+        onAnswer(id)
+      },
+      quick || !el ? 0 : CAST_MS,
+    )
   }
 
   // keys 1-4 pick the matching option
@@ -86,12 +116,26 @@ export default function QuestionScreen({ question, canGoBack, onAnswer, onBack }
           }}
         >
           {question.options.map((option) => (
-            <Option
+            <div
               key={option.id}
-              {...option}
-              selected={picked === option.id}
-              onSelect={() => choose(option.id)}
-            />
+              ref={(node) => {
+                optionRefs.current[option.id] = node
+              }}
+              className={
+                picked === option.id ? 'option-cast' : picked ? 'option-fade-out' : undefined
+              }
+              style={
+                picked === option.id && cast
+                  ? { '--tx': cast.tx, '--ty': cast.ty, '--mx': cast.mx, '--my': cast.my }
+                  : undefined
+              }
+            >
+              <Option
+                {...option}
+                selected={picked === option.id}
+                onSelect={() => choose(option.id)}
+              />
+            </div>
           ))}
         </div>
       </ScreenContent>

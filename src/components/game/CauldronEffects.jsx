@@ -44,7 +44,7 @@ const SPARKS = Array.from({ length: 5 }, () => {
   return { ...inPool(0.7), size: between(2, 3.6), rise: between(50, 110), drift: between(-30, 30), dur, delay: -rnd() * dur * 3 }
 })
 
-export default function CauldronEffects({ intense = false }) {
+export default function CauldronEffects({ intense = false, puff = 0 }) {
   return (
     <div className={`pointer-events-none absolute inset-0 ${intense ? 'cauldron-intense' : ''}`} aria-hidden="true">
       {/* wide, soft light on the wall and floor */}
@@ -122,6 +122,21 @@ export default function CauldronEffects({ intense = false }) {
           }}
         />
       ))}
+
+      {/* a quiz answer landed: one soft puff of smoke, then gone. `puff` is a
+          counter, so re-keying restarts the animation on every trigger. */}
+      {puff > 0 && (
+        <span
+          key={puff}
+          className="cauldron-puff absolute rounded-full"
+          style={{
+            left: ds(POOL.cx - 95),
+            top: ds(POOL.cy - 95),
+            width: ds(190),
+            height: ds(190),
+          }}
+        />
+      )}
     </div>
   )
 }
