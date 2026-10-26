@@ -591,3 +591,37 @@ html.diving .portal-pool { animation-play-state: paused; }
   .dive-overlay, .game-arrive { animation: none; }
   .dive-overlay { display: none; }
 }
+
+/* ---- Home sign-off: "Designed and built with ♥ by Akash" ------------------ */
+.credit {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 60;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-family: "Instrument Sans", sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+.credit img {
+  display: block;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.5));
+}
+.credit a {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  transition: text-decoration-color 0.2s;
+}
+.credit a:hover {
+  text-decoration-color: #fff;
+}

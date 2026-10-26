@@ -3,6 +3,7 @@ import Hero from './components/Hero.jsx'
 import SplashCursor from './components/SplashCursor.jsx'
 import GameStage from './components/game/GameStage.jsx'
 import DiveOverlay from './components/DiveOverlay.jsx'
+import Credit from './components/Credit.jsx'
 import PacmanScreen from './components/pacman/PacmanScreen.jsx'
 import { playDive } from './game/dive.js'
 import { watchPerformance, preloadGameAssets } from './game/perf.js'
@@ -144,6 +145,7 @@ export default function App() {
         <div ref={sceneRef}>
           <Hero onEnterPortal={enterPortal} onChallenge={enterChallenge} />
           <SplashCursor RAINBOW_MODE={false} COLOR="#00e5ff" DENSITY_DISSIPATION={6} />
+          <Credit />
         </div>
       ) : screen === 'pacman' ? (
         <PacmanScreen onClose={goHome} />
