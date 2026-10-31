@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import Hero from './components/Hero.jsx'
 import SplashCursor from './components/SplashCursor.jsx'
 import GameStage from './components/game/GameStage.jsx'
@@ -162,6 +163,7 @@ export default function App() {
       )}
       {dive && <DiveOverlay x={dive.x} y={dive.y} />}
       {cut && <div aria-hidden="true" className="cut-fade" />}
+      <Analytics />
     </main>
   )
 }
